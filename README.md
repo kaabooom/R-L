@@ -6,5 +6,9 @@ Resources I used for learning ~
 [stable-baseline3 docs](https://stable-baselines3.readthedocs.io/en/master/guide/rl.html) |
 [info of envs](https://gymnasium.farama.org/) |
 [atari envs](https://ale.farama.org)
+---
+more resources youtube 😎 or in stable-baseline3 site under resources section 
 
+---
+can refer jonny code yt channel 
 
