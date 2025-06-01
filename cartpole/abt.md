@@ -65,9 +65,89 @@ The optimal policy is 🤧:
 ## 📈Result from my training ~
 ![Screenshot 2025-05-31 223258](https://github.com/user-attachments/assets/7c47df20-7be6-473f-a15e-f15cb98fbd64)  ![Screenshot 2025-05-31 223307](https://github.com/user-attachments/assets/4c822b1d-da32-4be7-ade2-2ac853669628)
 
-Optimal training EP is 1500 to 2000 ( i did it for 3000 😥)
+Optimal training EP is 1500 to 2000 ( i did it for 3000 😥)  
+![ezgif-34e824e62639e7](https://github.com/user-attachments/assets/d8e6c701-4f5b-485b-aab1-fdde9f1707cd)
+---
+- # DQN
+The Deep Q-Network (DQN) algorithm uses a neural network to approximate Q-values for the CartPole environment, allowing it to handle the continuous state space. It learns optimal actions by combining experience replay and a target network to stabilize training.  
 
-![video](https://github.com/user-attachments/assets/00a6909e-e03b-4a7d-9c20-50fe63c3a77a)
+step 1 :Is to define Q-network (using pytorch)  
+step 2 :Initialize replay memory D to capacity N    
+step 3 :Initialize action-value function Q with random weights θ    (Q network use for predicting)  
+step 4 :Initialize target action-value function Q̂ with weights θ⁻ = θ      (target network for stablelizing)  
+step 5 :training loop (each ep)
+
+    For episode = (1 to M) do   #M is total no of episodes
+        Initialize sequence s₁ = {x₁} and preprocessed sequence ϕ₁ = ϕ(s₁)   #x1 is the first obs of the ep
+    
+        For t = (1 to T) do     #T is max time steps per episodes
+            With probability ε select a random action aₜ  
+            Otherwise select aₜ = argmaxₐ Q(ϕ(sₜ), a; θ)  with probability 1-ε
+    
+            Execute action aₜ in emulator and observe reward rₜ and image xₜ₊₁  
+            Set sₜ₊₁ = sₜ, aₜ, xₜ₊₁ and preprocess ϕₜ₊₁ = ϕ(sₜ₊₁)  
+    
+            Store transition (ϕₜ, aₜ, rₜ, ϕₜ₊₁) in D  
+            Sample random minibatch of transitions (ϕⱼ, aⱼ, rⱼ, ϕⱼ₊₁) from D  
+    
+            Set target yⱼ =  
+                rⱼ if episode terminates at step j+1  
+                rⱼ + γ * maxₐ' Q̂(ϕⱼ₊₁, a'; θ⁻) otherwise  
+    
+            Perform a gradient descent step on (yⱼ - Q(ϕⱼ, aⱼ; θ))² w.r.t θ  
+    
+            Every C steps, reset Q̂ = Q  
+        End For
+    End For
+#### More easy way of explanation ~
+1. Create a memory (called replay buffer) to store experiences.
+2. Build two neural networks:
+   - Q Network (for predicting actions)
+   - Target Q Network (used for stable learning)
+   - Both are initially the same.
+
+3. For each episode:
+   a. Start from the initial state.
+   
+   b. For each step in the episode:
+      i.    Choose an action:
+            - With probability ε, choose a random action (explore).
+            - Otherwise, pick the best action from the Q network (exploit).
+
+      ii.   Do the action in the environment, get:
+            - New state
+            - Reward
+            - Whether episode is done
+
+      iii.  Save this experience (state, action, reward, next state) to memory.
+
+      iv.   Randomly pick a batch of past experiences from memory.
+
+      v.    For each experience in the batch:
+            - Calculate the target Q value:
+              → If it's the last step: target = reward
+              → Else: target = reward + γ * max Q value from target network
+
+      vi.   Update the Q network using gradient descent to reduce the difference between:
+            - Predicted Q value and the target Q value
+
+      vii.  Every few steps, update the target network to match the Q network.
+
+4. Repeat for many episodes until the agent learns.
+---
+✅ Experience Replay: Transitions are stored in memory D and sampled randomly to break correlation.  
+✅ Fixed Q-Target: The target network Q̂ (with weights θ⁻) is updated every C steps, not every step, to stabilize learning.
+
+## 📈Result from my training ~
+![dqn_training_cartPoleDQN](https://github.com/user-attachments/assets/3731ce19-59d3-4d06-9393-802491c46c1b)  
+![epsilon_decay_cartpoleDQN](https://github.com/user-attachments/assets/7d292559-351c-44b4-bdee-887e26143ba5)  
+![ezgif-240a8c09fab965](https://github.com/user-attachments/assets/859919fa-9a61-4aaf-832a-fe0b390db2fd)
+PS - More stable than Qlearning one 😎
+
+
+
+
+
 
 
 
